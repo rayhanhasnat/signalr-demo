@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AvengersMVC.Migrations
 {
     [DbContext(typeof(AvengersContext))]
-    [Migration("20210925134601_InitialCreate")]
+    [Migration("20210925154034_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,8 +23,8 @@ namespace AvengersMVC.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("CanFly")
-                        .HasColumnType("TEXT");
+                    b.Property<bool>("CanFly")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("TEXT");

@@ -11,7 +11,7 @@ namespace AvengersMVC.Models
         public string SuperheroName { get; set; }
         public string RealName { get; set; }
         public string Weapons { get; set; }
-        public string CanFly { get; set; }
+        public bool CanFly { get; set; }
         public string ImageUrl { get; set; }
     }
 }

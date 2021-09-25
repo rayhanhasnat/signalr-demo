@@ -15,7 +15,7 @@ namespace AvengersMVC.Migrations
                     SuperheroName = table.Column<string>(type: "TEXT", nullable: true),
                     RealName = table.Column<string>(type: "TEXT", nullable: true),
                     Weapons = table.Column<string>(type: "TEXT", nullable: true),
-                    CanFly = table.Column<string>(type: "TEXT", nullable: true),
+                    CanFly = table.Column<bool>(type: "INTEGER", nullable: false),
                     ImageUrl = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>

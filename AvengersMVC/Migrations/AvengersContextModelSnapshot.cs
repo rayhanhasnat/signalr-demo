@@ -21,8 +21,8 @@ namespace AvengersMVC.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("CanFly")
-                        .HasColumnType("TEXT");
+                    b.Property<bool>("CanFly")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("TEXT");

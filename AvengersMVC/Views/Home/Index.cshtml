@@ -2,7 +2,137 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="add-form">
+    <form action="">
+        <div class="form-group">
+            <label>Superhero Name</label>
+            <input type="text" name="superheroName" autocomplete="off">
+        </div>
+        <div class="form-group">
+            <label>Real Name</label>
+            <input type="text" name="realName" autocomplete="off">
+        </div>
+        <div class="form-group">
+            <label>Weapons</label>
+            <input type="text" name="weapons" autocomplete="off">
+        </div>
+        <div class="form-group">
+            <label>Image Url</label>
+            <input type="text" name="imageUrl" autocomplete="off">
+        </div>
+        <div class="form-group">
+            <label>Can Fly?</label>
+            <input type="checkbox" name="canFly" value="true">
+            <button id="btnSave">Save</button>
+        </div>
+    </form>
 </div>
+
+<div class="items">
+</div>
+
+@section Scripts {
+    <script>
+        let btnSave = document.querySelector('#btnSave');
+        let btnRemove = document.querySelectorAll('.btnRemove');
+
+        let superheroName = document.querySelector('[name="superheroName"]');
+        let realName = document.querySelector('[name="realName"]');
+        let weapons = document.querySelector('[name="weapons"]');
+        let imageUrl = document.querySelector('[name="imageUrl"]');
+        let canFly = document.querySelector('[name="canFly"]');
+
+        let avengers = [];
+
+        btnSave.addEventListener('click', (e) => {
+            e.preventDefault();
+            saveAvenger();
+        });
+
+        async function saveAvenger() {
+            let avenger = {
+                superheroName: superheroName.value,
+                realName: realName.value,
+                weapons: weapons.value,
+                imageUrl: imageUrl.value,
+                canFly: canFly.checked ? true : false
+            }
+
+            const rawResponse = await fetch('/api/avengers/save', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(avenger)
+            });
+            const content = await rawResponse.json();
+
+            alert(content);
+
+            clearForm();
+            getAvengers();
+        }
+
+        async function getAvengers() {
+            avengers = await fetch('/api/avengers/get')
+                .then(response => response.json())
+                .then(data => data);
+
+            renderAvengers();
+        }
+
+        function renderAvengers() {
+            let list = document.querySelector('.items');
+            let listContent = "";
+            avengers.forEach(avenger => {
+                let listItem = `
+                    <div class="item">
+                        <div class="avatar" style="background-image: url('${avenger.imageUrl}')"></div>
+
+                        <div class="description">
+                            <h1>${avenger.superheroName}</h1>
+                            <p>(${avenger.realName})</p>
+                            <p>Weapons: ${avenger.weapons}</p>
+                            <p>Can Fly: ${avenger.canFly}</p>
+                        </div>
+
+                        <div class="action">
+                            <button onclick="removeAvenger(${avenger.id})" class="btnRemove">X</button>
+                        </div>
+                    </div>
+                `;
+
+                listContent += listItem;
+            });
+
+            list.innerHTML = listContent;
+        }
+
+        async function removeAvenger(id) {
+            const rawResponse = await fetch('/api/avengers/delete', {
+                method: 'POST',
+                headers: {
+                    //'Content-Type': 'application/json'
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${id}`
+            });
+            const content = await rawResponse.text();
+
+            alert(content);
+
+            getAvengers();
+        }
+
+        function clearForm() {
+            superheroName.value = "";
+            realName.value = "";
+            weapons.value = "";
+            imageUrl.value = "";
+            canFly.checked = false;
+        }
+
+        getAvengers();
+    </script>
+}
