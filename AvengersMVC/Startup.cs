@@ -1,4 +1,5 @@
 using AvengersMVC.Data;
+using AvengersMVC.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,8 @@ namespace AvengersMVC
             {
                 options.UseSqlite(Configuration.GetConnectionString("AvengersContext"));
             });
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +55,8 @@ namespace AvengersMVC
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapHub<DataHub>("/dataHub");
             });
         }
     }

@@ -31,8 +31,38 @@
 <div class="items">
 </div>
 
+<div id="connectionCount">Hello</div>
+
+<button id="tstButton">Send</button>
+
 @section Scripts {
+    <script src="~/js/signalr.min.js"></script>
+
     <script>
+        var connection = new signalR.HubConnectionBuilder().withUrl("/dataHub").build();
+
+        connection.on('showConnection', (count) => {
+            let connectionCount = document.querySelector('#connectionCount');
+            connectionCount.innerHTML = `<p>Connected User: ${count}</p>`;
+        })
+
+        connection.on('ReceiveData', () => {
+            getAvengers();
+        });
+
+        let tstButton = document.querySelector('#tstButton');
+
+        tstButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            connection.invoke('SendTestData', 'Test Data');
+        })
+
+
+        connection.on('ReceiveTestData', (message) => {
+            alert(message);
+        })
+
+
         let btnSave = document.querySelector('#btnSave');
         let btnRemove = document.querySelectorAll('.btnRemove');
 
@@ -87,21 +117,21 @@
             let listContent = "";
             avengers.forEach(avenger => {
                 let listItem = `
-                    <div class="item">
-                        <div class="avatar" style="background-image: url('${avenger.imageUrl}')"></div>
+                        <div class="item">
+                            <div class="avatar" style="background-image: url('${avenger.imageUrl}')"></div>
 
-                        <div class="description">
-                            <h1>${avenger.superheroName}</h1>
-                            <p>(${avenger.realName})</p>
-                            <p>Weapons: ${avenger.weapons}</p>
-                            <p>Can Fly: ${avenger.canFly}</p>
-                        </div>
+                            <div class="description">
+                                <h1>${avenger.superheroName}</h1>
+                                <p>(${avenger.realName})</p>
+                                <p>Weapons: ${avenger.weapons}</p>
+                                <p>Can Fly: ${avenger.canFly}</p>
+                            </div>
 
-                        <div class="action">
-                            <button onclick="removeAvenger(${avenger.id})" class="btnRemove">X</button>
+                            <div class="action">
+                                <button onclick="removeAvenger(${avenger.id})" class="btnRemove">X</button>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
 
                 listContent += listItem;
             });
@@ -134,5 +164,7 @@
         }
 
         getAvengers();
+
+        connection.start();
     </script>
 }

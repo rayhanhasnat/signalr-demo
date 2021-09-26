@@ -1,6 +1,8 @@
 ﻿using AvengersMVC.Data;
+using AvengersMVC.Hubs;
 using AvengersMVC.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,9 +16,11 @@ namespace AvengersMVC.Controllers
     public class AvengersController : Controller
     {
         private readonly AvengersContext db;
-        public AvengersController(AvengersContext dbContext)
+        private IHubContext<DataHub> hub;
+        public AvengersController(AvengersContext dbContext, IHubContext<DataHub> hubContext)
         {
             db = dbContext;
+            hub = hubContext;
         }
 
         [Route("get")]
@@ -32,6 +36,7 @@ namespace AvengersMVC.Controllers
         {
             db.Avengers.Add(avenger);
             await db.SaveChangesAsync();
+            await hub.Clients.All.SendAsync("ReceiveData");
             return Ok("Saved");
         }
 
@@ -42,6 +47,7 @@ namespace AvengersMVC.Controllers
             Avenger avenger = db.Avengers.Where(av => av.Id == id).First();
             db.Avengers.Remove(avenger);
             await db.SaveChangesAsync();
+            await hub.Clients.All.SendAsync("ReceiveData");
             return Ok("Deleted");
         }
     }
